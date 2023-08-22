@@ -1,0 +1,86 @@
+version: '3'
+services:
+  proxy:
+    image: jwilder/nginx-proxy:alpine
+    labels:
+      - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy=true"
+    # container_name: nextcloud-proxy
+    restart: unless-stopped
+    volumes:
+      - ./proxy/conf.d:/etc/nginx/conf.d:rw
+      - ./proxy/vhost.d:/etc/nginx/vhost.d:rw
+      - ./proxy/html:/usr/share/nginx/html:rw
+      - ./proxy/certs:/etc/nginx/certs:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    networks:
+      net:
+        ipv4_address: 10.17.3.4
+    ports:
+      - 80:80
+      - 444:443
+  # letsencrypt:
+  #   image: jrcs/letsencrypt-nginx-proxy-companion
+  #   container_name: nextcloud-letsencrypt
+  #   depends_on:
+  #     - proxy
+  #   networks:
+  #     - net
+  #   volumes:
+  #     - ./proxy/certs:/etc/nginx/certs:rw
+  #     - ./proxy/vhost.d:/etc/nginx/vhost.d:rw
+  #     - ./proxy/html:/usr/share/nginx/html:rw
+  #     - /etc/localtime:/etc/localtime:ro
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #   restart: unless-stopped
+  db:
+    image: mariadb
+    # container_name: nextcloud-mariadb
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD
+      - MYSQL_PASSWORD
+      - MYSQL_DATABASE
+      - MYSQL_USER
+    volumes:
+      - db:/var/lib/mysql
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      net:
+        ipv4_address: 10.17.3.3
+    ports:
+      - "3306:3306" 
+
+  app:
+    image: nextcloud:latest
+    # container_name: nextcloud-app
+    restart: unless-stopped
+    depends_on:
+      # - letsencrypt
+      - proxy
+      - db
+    environment:
+      - VIRTUAL_HOST
+      # - LETSENCRYPT_HOST
+      # - LETSENCRYPT_EMAIL
+    volumes:
+      - nextcloud:/var/www/html
+      - ./app/data:/var/www/html/data
+      - ./app/config:/var/www/html/config
+      - ./app/custom_apps:/var/www/html/custom_apps
+      - ./app/themes:/var/www/html/themes
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      net:
+        ipv4_address: 10.17.3.2
+    
+volumes:
+  nextcloud:
+  db:
+
+networks:
+  net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.17.3.0/28
