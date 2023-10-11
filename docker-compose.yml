@@ -10,8 +10,8 @@ services:
       - ./volume/nextcloud/config:/config
       - ./volume/nextcloud/data:/data
     ports:
-      # - 8032:80
-      - 8132:443
+      - 8032:80
+      # - 8132:443
     restart: unless-stopped
     networks:
       default:
@@ -33,7 +33,7 @@ services:
     volumes:
       - ./volume/mariadb/config:/config
     ports:
-      - 3306:3306
+      - 3307:3306
     restart: unless-stopped
     networks:
       default:
