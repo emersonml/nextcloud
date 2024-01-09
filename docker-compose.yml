@@ -10,12 +10,15 @@ services:
       - ./volume/nextcloud/config:/config
       - ./volume/nextcloud/data:/data
     ports:
-      - 8032:80
+      - 9012:80
       # - 8132:443
     restart: unless-stopped
     networks:
-      default:
+      network:
         ipv4_address: 10.0.3.2
+      nginx_network:
+        ipv4_address: 10.0.2.12
+
     depends_on:
       - mariadb
 
@@ -36,12 +39,14 @@ services:
       - 3307:3306
     restart: unless-stopped
     networks:
-      default:
+      network:
         ipv4_address: 10.0.3.3
 
 networks:
-  default:
+  network:
     driver: bridge
     ipam:
       config:
         - subnet: 10.0.3.0/24
+  nginx_network:
+    external: true
