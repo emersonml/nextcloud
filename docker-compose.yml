@@ -1,52 +1,35 @@
 version: "3.8"
 services:
   app:
-    image: linuxserver/nextcloud:latest
+    image: linuxserver/nextcloud:32.0.0-ls398
+    hostname: nextcloud
     environment:
       - PUID=1000
       - PGID=1000
       - TZ='America/Maceio'
     volumes:
-      - ./volume/nextcloud/config:/config
-      - ./volume/nextcloud/data:/data
-    ports:
-      - 9012:80
-      # - 8132:443
+      - /srv/volumes/nextcloud/config:/config
+      - /srv/volumes/nextcloud/data:/data
+
     restart: unless-stopped
-    networks:
-      network:
-        ipv4_address: 10.0.3.2
-      nginx_network:
-        ipv4_address: 10.0.2.12
+
 
     depends_on:
       - mariadb
 
   mariadb:
-    image: linuxserver/mariadb:latest
+    image: linuxserver/mariadb:11.4.8-r0-ls197    
+    hostname: mariadb
     environment:
       - PUID=1000
-      - PGID=100
+      - PGID=1000
       - TZ='America/Maceio'
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - REMOTE_SQL=${REMOTE_SQL}
     volumes:
-      - ./volume/mariadb/config:/config
-    ports:
-      - 3307:3306
-    restart: unless-stopped
-    networks:
-      network:
-        ipv4_address: 10.0.3.3
+      - /srv/volumes/nextcloud/mariadb/config:/config
+      - /srv/volumes/nextcloud/mariadb/database:/var/lib/mysql
 
-networks:
-  network:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 10.0.3.0/24
-  nginx_network:
-    external: true
+    restart: unless-stopped
