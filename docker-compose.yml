@@ -8,14 +8,14 @@ services:
       - PGID=1000
       - TZ='America/Maceio'
     volumes:
-      - /srv/volumes/nextcloud/config:/config
-      - /srv/volumes/nextcloud/data:/data
+      - /srv/volumes/app/config:/config
+      - /srv/volumes/app/data:/data
 
     restart: unless-stopped
 
 
     depends_on:
-      - mariadb
+      - db
 
   db:
     image: linuxserver/mariadb:11.4.8-r0-ls197    
