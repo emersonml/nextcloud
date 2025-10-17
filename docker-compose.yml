@@ -17,7 +17,7 @@ services:
     depends_on:
       - mariadb
 
-  mariadb:
+  db:
     image: linuxserver/mariadb:11.4.8-r0-ls197    
     hostname: mariadb
     environment:
@@ -29,7 +29,7 @@ services:
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     volumes:
-      - /srv/volumes/nextcloud/mariadb/config:/config
-      - /srv/volumes/nextcloud/mariadb/database:/var/lib/mysql
+      - /srv/volumes/nextcloud/db/config:/config
+      - /srv/volumes/nextcloud/db/database:/var/lib/mysql
 
     restart: unless-stopped
