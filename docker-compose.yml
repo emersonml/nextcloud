@@ -1,35 +1,32 @@
-version: "3.8"
 services:
   app:
     image: linuxserver/nextcloud:32.0.0-ls398
     hostname: nextcloud
+    # user: "899:899"
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=899
+      - PGID=899
       - TZ='America/Maceio'
     volumes:
-      - /srv/volumes/app/config:/config
-      - /srv/volumes/app/data:/data
-
+      - /srv/docker/volumes/nextcloud/app/config:/config
+      - /srv/docker/volumes/nextcloud/app/data:/data
     restart: unless-stopped
-
-
     depends_on:
       - db
 
   db:
     image: linuxserver/mariadb:11.4.8-r0-ls197    
     hostname: mariadb
+    # user: "899:899"
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=899
+      - PGID=899
       - TZ='America/Maceio'
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     volumes:
-      - /srv/volumes/nextcloud/db/config:/config
-      - /srv/volumes/nextcloud/db/database:/var/lib/mysql
-
+      - /srv/docker/volumes/nextcloud/db/config:/config
+      - /srv/docker/volumes/nextcloud/db/database:/var/lib/mysql
     restart: unless-stopped
