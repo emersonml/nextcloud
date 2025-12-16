@@ -1,6 +1,7 @@
 services:
   app:
-    image: linuxserver/nextcloud:32.0.0-ls398
+    # image: linuxserver/nextcloud:32.0.0-ls398
+    image: emersonml/nextcloud:32
     hostname: nextcloud
     # user: "899:899"
     environment:
@@ -15,9 +16,10 @@ services:
       - db
 
   db:
-    image: linuxserver/mariadb:11.4.8-r0-ls197    
+    image: emersonml/nextcloud-mariadb:11.4    
     hostname: mariadb
     # user: "899:899"
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     environment:
       - PUID=899
       - PGID=899
