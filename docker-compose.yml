@@ -1,17 +1,12 @@
 services:
   app:
-    ## image: linuxserver/nextcloud:32.0.0-ls398
     image: emersonml/nextcloud:32
     hostname: nextcloud
-    # user: "899:899"
     environment:
-      # - PUID=899
-      # - PGID=899
       - TZ='America/Maceio'
     volumes:
-      # - /srv/docker/volumes/nextcloud/app/config:/config
-      - /srv/docker/volumes/nextcloud/app:/var/www/html
-      # - /srv/docker/volumes/nextcloud/app/data:/data
+      - /tank/docker/nextcloud/config:/var/www/html/config
+      - /tank/docker/nextcloud/data:/var/www/html/data
     restart: unless-stopped
     depends_on:
       - db
@@ -19,19 +14,14 @@ services:
   db:
     image: emersonml/nextcloud-mariadb:11.4    
     hostname: mariadb
-    # user: "899:899"
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     environment:
-      # - PUID=899
-      # - PGID=899
       - TZ='America/Maceio'
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     volumes:
-      # - /srv/docker/volumes/nextcloud/db/config:/config
-      # - /srv/docker/volumes/nextcloud/db/database:/var/lib/mysql
-      - /srv/docker/volumes/nextcloud/db:/var/lib/mysql
+      - /tank/docker/nextcloud/db:/var/lib/mysql
 
     restart: unless-stopped
