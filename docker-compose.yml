@@ -1,6 +1,7 @@
 services:
   app:
     image: lscr.io/linuxserver/nextcloud:latest
+    hostname: nextcloud 
     environment:
       - PUID=2000    # Usuário root
       - PGID=2000 # Seu novo grupo docker-data
@@ -16,6 +17,7 @@ services:
 
   db:
     image: lscr.io/linuxserver/mariadb:latest
+    hostname: mariadb
     environment:
       - PUID=2000
       - PGID=2000
