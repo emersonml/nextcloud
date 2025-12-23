@@ -1,0 +1,27 @@
+services:
+  app:
+    image: emersonml/nextcloud:32
+    hostname: nextcloud
+    environment:
+      - TZ='America/Maceio'
+    volumes:
+      - /tank/docker/nextcloud/config:/var/www/html/config
+      - /tank/docker/nextcloud/data:/var/www/html/data
+    restart: unless-stopped
+    depends_on:
+      - db
+
+  db:
+    image: emersonml/nextcloud-mariadb:11.4    
+    hostname: mariadb
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    environment:
+      - TZ='America/Maceio'
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    volumes:
+      - /tank/docker/nextcloud/db:/var/lib/mysql
+
+    restart: unless-stopped
