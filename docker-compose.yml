@@ -1,27 +1,29 @@
 services:
   app:
-    image: emersonml/nextcloud:32
-    hostname: nextcloud
+    image: lscr.io/linuxserver/nextcloud:latest
     environment:
-      - TZ='America/Maceio'
+      - PUID=0    # Usuário root
+      - PGID=2000 # Seu novo grupo docker-data
+      - TZ=America/Maceio
+      - OVERWRITEPROTOCOL=https
+      - TRUSTED_PROXIES=IP_DO_SEU_PROXY_OU_REDE
     volumes:
-      - /tanque/docker/nextcloud/config:/var/www/html/config
-      - /tanque/docker/nextcloud/data:/var/www/html/data
+      - /tanque/docker/nextcloud/config:/config
+      - /tanque/docker/nextcloud/data:/data
     restart: unless-stopped
     depends_on:
       - db
 
   db:
-    image: emersonml/nextcloud-mariadb:11.4    
-    hostname: mariadb
-    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    image: lscr.io/linuxserver/mariadb:latest
     environment:
-      - TZ='America/Maceio'
+      - PUID=0
+      - PGID=2000
+      - TZ=America/Maceio
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     volumes:
-      - /tanque/docker/nextcloud/db:/var/lib/mysql
-
+      - /tanque/docker/nextcloud/db:/config
     restart: unless-stopped
