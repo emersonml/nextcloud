@@ -2,7 +2,7 @@ services:
   app:
     image: lscr.io/linuxserver/nextcloud:latest
     environment:
-      - PUID=0    # Usuário root
+      - PUID=2000    # Usuário root
       - PGID=2000 # Seu novo grupo docker-data
       - TZ=America/Maceio
       - OVERWRITEPROTOCOL=https
@@ -17,7 +17,7 @@ services:
   db:
     image: lscr.io/linuxserver/mariadb:latest
     environment:
-      - PUID=0
+      - PUID=2000
       - PGID=2000
       - TZ=America/Maceio
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
