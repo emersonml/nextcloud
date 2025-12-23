@@ -5,8 +5,8 @@ services:
     environment:
       - TZ='America/Maceio'
     volumes:
-      - /tank/docker/nextcloud/config:/var/www/html/config
-      - /tank/docker/nextcloud/data:/var/www/html/data
+      - /tanque/docker/nextcloud/config:/var/www/html/config
+      - /tanque/docker/nextcloud/data:/var/www/html/data
     restart: unless-stopped
     depends_on:
       - db
@@ -22,6 +22,6 @@ services:
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     volumes:
-      - /tank/docker/nextcloud/db:/var/lib/mysql
+      - /tanque/docker/nextcloud/db:/var/lib/mysql
 
     restart: unless-stopped
