@@ -1,79 +1,62 @@
 
 services:
-  nextcloud:
-    image: lscr.io/linuxserver/nextcloud:latest
-    container_name: nextcloud
-    hostname: nextcloud
-    
-    ports:
-      - "8080:80"  # Ou use sua porta preferida
-    
-    environment:
-      - PUID=911
-      - PGID=911
-      - UMASK=002
-      - TZ=America/Sao_Paulo  # Ajuste seu fuso
-      
-      - MYSQL_HOST=mariadb
-      - MYSQL_DATABASE=nextcloud
-      - MYSQL_USER=nextcloud
-      - MYSQL_PASSWORD=sua_senha_forte
-      
-      - NEXTCLOUD_TRUSTED_DOMAINS=localhost seu-ip seu-dominio
-      - NEXTCLOUD_ADMIN_USER=admin
-      - NEXTCLOUD_ADMIN_PASSWORD=senha_admin_forte
-      
-      - PHP_MEMORY_LIMIT=512M
-      - PHP_UPLOAD_LIMIT=10G
-    
-    volumes:
-      - ${DATA_DIR}/config:/config
-      - ${DATA_DIR}/data:/data
-      - ${DATA_DIR}/apps-persist:/apps-persist
-    
-    depends_on:
-      - mariadb
-      - redis
-    
-    networks:
-      - nextcloud_network
-    
-    restart: unless-stopped
-  
-  mariadb:
+  nextcloud-db:
     image: lscr.io/linuxserver/mariadb:latest
-    container_name: nextcloud_mariadb
-    
+    container_name: nextcloud-db
+    hostname: nextcloud-db
+    restart: unless-stopped
     environment:
-      - PUID=911
-      - PGID=911
-      - TZ=America/Sao_Paulo
-      - MYSQL_ROOT_PASSWORD=senha_root_forte
-      - MYSQL_DATABASE=nextcloud
-      - MYSQL_USER=nextcloud
-      - MYSQL_PASSWORD=sua_senha_forte
-    
-    volumes:
-      - ${DATA_DIR}/mysql:/var/lib/mysql
-    
+      - TZ=${TZ}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     networks:
-      - nextcloud_network
-    
-    restart: unless-stopped
-  
-  redis:
-    image: redis:7-alpine
-    container_name: nextcloud_redis
-    command: redis-server --appendonly yes
-    
+      - nextcloud-network
     volumes:
-      - ${DATA_DIR}/redis:/data
-    
-    networks:
-      - nextcloud_network
-    
+      - mariadb_data:/config
+
+  nextcloud-redis:
+    image: redis:alpine
+    container_name: nextcloud-redis
+    hostname: nextcloud-redis
     restart: unless-stopped
+    networks:
+      - nextcloud-network
+
+  nextcloud-app:
+    image: lscr.io/linuxserver/nextcloud:latest
+    container_name: nextcloud-app
+    hostname: nextcloud-app
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ}
+      # Proxy reverso (NPM)
+      - OVERWRITEPROTOCOL=https
+      - TRUSTED_PROXIES=npm-app
+      # PHP
+      - PHP_MEMORY_LIMIT=${PHP_MEMORY_LIMIT}
+      - PHP_UPLOAD_LIMIT=${PHP_UPLOAD_LIMIT}
+    networks:
+      - nextcloud-network
+    ports:
+      - "8000:80"
+      - "44300:443"
+    volumes:
+      - ./volumes/app/config:/config
+      - nextcloud_data:/data
+    depends_on:
+      - nextcloud-db
+      - nextcloud-redis
+
+volumes:
+  mariadb_data:
+  nextcloud_data:
 
 networks:
-  nextcloud_network:
-    driver: bridge
+  nextcloud-network:
+    name: nextcloud-network
+    external: true
+
+
+# Qual mundo voce quer viver
