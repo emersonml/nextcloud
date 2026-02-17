@@ -43,15 +43,16 @@ services:
       - "8000:80"
       - "44300:443"
     volumes:
-      - ./volumes/app/config:/config
+      - nextcloud_config:/config
       - nextcloud_data:/data
     depends_on:
       - nextcloud-db
       - nextcloud-redis
 
 volumes:
-  mariadb_data:
+  nextcloud_config:
   nextcloud_data:
+  mariadb_data:
 
 networks:
   nextcloud-network:
