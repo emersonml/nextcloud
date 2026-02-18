@@ -1,6 +1,5 @@
-
 services:
-  nextcloud-db:
+  db:
     image: lscr.io/linuxserver/mariadb:latest
     container_name: nextcloud-db
     hostname: nextcloud-db
@@ -14,9 +13,9 @@ services:
     networks:
       - nextcloud-network
     volumes:
-      - mariadb_data:/config
+      - db_config:/config
 
-  nextcloud-redis:
+  redis:
     image: redis:alpine
     container_name: nextcloud-redis
     hostname: nextcloud-redis
@@ -24,7 +23,7 @@ services:
     networks:
       - nextcloud-network
 
-  nextcloud-app:
+  app:
     image: lscr.io/linuxserver/nextcloud:latest
     container_name: nextcloud-app
     hostname: nextcloud-app
@@ -43,21 +42,18 @@ services:
       - "8000:80"
       - "44300:443"
     volumes:
-      - nextcloud_config:/config
-      - nextcloud_data:/data
+      - app_config:/config
+      - app_data:/data
     depends_on:
-      - nextcloud-db
-      - nextcloud-redis
-
-volumes:
-  nextcloud_config:
-  nextcloud_data:
-  mariadb_data:
+      - db
+      - redis
 
 networks:
   nextcloud-network:
     name: nextcloud-network
     external: true
 
-
-# Qual mundo voce quer viver
+volumes:
+  db_config:
+  app_config:
+  app_data:
