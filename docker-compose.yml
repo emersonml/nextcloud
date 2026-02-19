@@ -11,7 +11,7 @@ services:
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     networks:
-      - nextcloud_network
+      - network
     volumes:
       - db_config:/config
   redis:
@@ -20,7 +20,7 @@ services:
     hostname: nextcloud-redis
     restart: unless-stopped
     networks:
-      - nextcloud_network
+      - network
   app:
     image: lscr.io/linuxserver/nextcloud:latest
     container_name: nextcloud-app
@@ -35,7 +35,7 @@ services:
       - PHP_MEMORY_LIMIT=${PHP_MEMORY_LIMIT}
       - PHP_UPLOAD_LIMIT=${PHP_UPLOAD_LIMIT}
     networks:
-      - nextcloud_network
+      - network
       - npm_nextcloud_network
     ports:
       - "8000:80"
@@ -47,7 +47,7 @@ services:
       - db
       - redis
 networks:
-  nextcloud_network:
+  network:
   npm_nextcloud_network:
     external: true
 volumes:
